@@ -1,48 +1,55 @@
+from audioop import reverse
+
 from django.shortcuts import render, get_object_or_404, redirect
-from django.template.context_processors import request
+from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.generic import DetailView, CreateView, UpdateView, ListView, FormView, DeleteView
+
 from .models import Post
 from .form import PostForm
 
 
-def post_list(request):
-    posts = Post.objects.filter(published_date__lte = timezone.now()).order_by('published_date')
-    return render(request, 'blog/post_list.html', {'posts':posts})
+class PostList(ListView):
+    model = Post
+    queryset = Post.objects.filter(published_date__lte=timezone.now()).order_by('published_date')
 
 
-def post_new(request):
+class PostDetails(DetailView):
+    model = Post
 
-    if request.method == "POST":
+
+class PostCreateView(CreateView):
+    model = Post
+    form_class = PostForm
+    success_url = "blog/post_detail"
+
+    def post(self, request):
         form = PostForm(request.POST)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
-            post.published_date =timezone.now()
+            post.published_date = timezone.now()
             post.save()
-            return redirect('post_detail', pk=post.pk)
-    else:
-        form = PostForm()
-    return render(request, 'blog/post_edit.html',{'form' : form})
+
+        return render(request, 'blog/post_detail.html', {'post': post})
 
 
-def post_detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    return render(request, 'blog/post_detail.html', {'post': post})
+class PostUpdateView(UpdateView):
+    model = Post
+    fields = ['title', 'text', ]
 
-
-def post_edit (request, pk):
-    post =get_object_or_404(Post, pk=pk)
-    if request.method =="POST":
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
-            post= form.save(commit=False)
+            post = form.save(commit=False)
             post.author = request.user
-            post.published_date= timezone.now()
+            post.published_date = timezone.now()
             post.save()
-            return  redirect('post_detail', pk=post.pk)
-    else:
-        form = PostForm(instance=post)
-    return render(request , 'blog/post_edit.html' , {'form':form})
+        return render(request, 'blog/post_detail.html', {'post': post})
 
 
-
+class PostDeleteView(DeleteView):
+    model = Post
+    template_name = 'blog/delete_view.html'
+    success_url = reverse_lazy('post_list')
