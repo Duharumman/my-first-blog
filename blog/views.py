@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import mixins, generics
+from rest_framework import mixins, generics, viewsets
 from django.http import Http404
 
 
@@ -230,3 +230,20 @@ class Generics(generics.ListCreateAPIView):
 class Generics_pk(generics.RetrieveUpdateDestroyAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+
+
+#  ViewSet
+
+class AuthorViewSet(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+
+class PublishViewSet(viewsets.ModelViewSet):
+    queryset = Publish.objects.all()
+    serializer_class = PublishSerializer

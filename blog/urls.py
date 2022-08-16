@@ -1,7 +1,12 @@
-from django.urls import path
-
+from django.urls import path, include
 from . import views
 from .views import PostList, PostDetails, PostCreateView, PostUpdateView, PostDeleteView
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+router.register('authors', views.AuthorViewSet),
+router.register('posts', views.PostViewSet),
+
 
 urlpatterns = [
     path('', PostList.as_view(), name='post_list'),
@@ -38,6 +43,10 @@ urlpatterns = [
     # 6.1  GET POST From Rest Generics Framework
     path('rest/generics', views.Generics.as_view()),
 
-    # 5.2  GET PUT DELETE From Rest Generics Framework
+    # 6.2  GET PUT DELETE From Rest Generics Framework
     path('rest/generics/<int:pk>', views.Generics_pk.as_view()),
+
+    # 7 ViewSet
+
+    path('rest/viewsets/', include(router.urls))
 ]
