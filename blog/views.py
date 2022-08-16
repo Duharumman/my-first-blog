@@ -218,3 +218,15 @@ class Mixins_pk(
 
     def delete(self, request, pk):
         return self.destroy(request)
+
+
+# Generics List Create
+class Generics(generics.ListCreateAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+
+# Generics Retrieve Update Destroy Create
+class Generics_pk(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer

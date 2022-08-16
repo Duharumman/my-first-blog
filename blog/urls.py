@@ -23,7 +23,6 @@ urlpatterns = [
     # 3.2 GET PUT DELETE FROM  rest framework  function based views
     path('rest/fbs/<int:pk>', views.FBV_pk),
 
-
     # 4.1 GET POST From Rest  Framework  Class  based views
     path('rest/cbv', views.CBV_List.as_view()),
 
@@ -35,4 +34,10 @@ urlpatterns = [
 
     # 5.2  GET PUT DELETE From Rest Mixins Framework
     path('rest/mixins/<int:pk>', views.Mixins_pk.as_view()),
+
+    # 6.1  GET POST From Rest Generics Framework
+    path('rest/generics', views.Generics.as_view()),
+
+    # 5.2  GET PUT DELETE From Rest Generics Framework
+    path('rest/generics/<int:pk>', views.Generics_pk.as_view()),
 ]
