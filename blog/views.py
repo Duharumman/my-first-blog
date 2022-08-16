@@ -1,5 +1,3 @@
-from audioop import reverse
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -13,6 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import mixins, generics
 from django.http import Http404
 
 
@@ -165,7 +164,7 @@ class CBV_pk(APIView):
         except Author.DoesNotExist:
             raise Http404
 
-    def get(self,request, pk):
+    def get(self, request, pk):
         author = self.get_object(pk=pk)
         serializer = AuthorSerializer(author)
         return Response(serializer.data)
@@ -183,3 +182,39 @@ class CBV_pk(APIView):
         author = self.get_object(pk=pk)
         author.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Mixins
+class Mixins_List(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    generics.GenericAPIView
+
+):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+    def get(self, request):
+        return self.list(request)
+
+    def post(self, request):
+        return self.create(request)
+
+
+class Mixins_pk(
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    generics.GenericAPIView
+):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+
+    def get(self, request, pk):
+        return self.retrieve(request)
+
+    def put(self, request, pk):
+        return self.update(request)
+
+    def delete(self, request, pk):
+        return self.destroy(request)
